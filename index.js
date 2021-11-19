@@ -41,6 +41,13 @@ async function run(){
           res.send(result);
         })
 
+        app.delete('/deleteproduct/:id', async(req, res)=>{
+          const id = req.params.id;
+          const query = {_id: ObjectId(id)};
+          const result = await productsCollection.deleteOne(query);
+          res.json(result);
+        })
+
         //get single api
         app.get('/singleService/:id', async(req, res)=>{
           const id = req.params.id;
@@ -69,6 +76,11 @@ async function run(){
           res.json(result);
         })
 
+        app.get('/allOrders', async(req, res)=>{
+          const result = await orderCollection.find({}).toArray();
+          res.json(result);
+        })
+
         //Order getting Api
         app.get('/myOrder', async(req, res)=>{
           const email = req.query.email;
@@ -83,6 +95,22 @@ async function run(){
           const query = {_id: ObjectId(id)};
           const result = await orderCollection.deleteOne(query);
           res.json(result);
+        })
+
+        //Update Status
+        app.put('/updateStatus/:id', async(req, res)=>{
+          const id = req.params.id;
+          const updatedStatus = req.body.status;
+          const filter = {_id: ObjectId(id)};
+          const options = { upsert : true };
+          const updatedDoc = {
+              $set: {
+                  status: updatedStatus
+              }
+          };
+          const result = await orderCollection.updateOne(filter, updatedDoc, options);
+          res.json(result);
+          
       })
 
       //Admin checking Api
